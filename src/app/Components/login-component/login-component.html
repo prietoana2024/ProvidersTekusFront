@@ -1,1 +1,79 @@
 <p>login-component works!</p>
+<div class="body">
+  <mat-card class="loginCard">
+    
+    <mat-card-header>
+      <mat-card-title>
+        <h2>Iniciar Sesión</h2>
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="formularioLogin" (ngSubmit)="iniciarSesion()">
+        
+        <!-- Email -->
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Email</mat-label>
+          <input 
+            formControlName="email" 
+            matInput 
+            type="email"
+            autocomplete="email"
+            placeholder="correo@ejemplo.com">
+          <mat-icon matPrefix>mail</mat-icon>
+          <mat-error *ngIf="formularioLogin.get('email')?.hasError('required')">
+            El email es requerido
+          </mat-error>
+          <mat-error *ngIf="formularioLogin.get('email')?.hasError('email')">
+            Email inválido
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Password -->
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input 
+            [type]="ocultarPassword ? 'password' : 'text'"
+            formControlName="password" 
+            matInput 
+            autocomplete="current-password"
+            placeholder="Contraseña">
+          <mat-icon matPrefix>lock</mat-icon>
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="ocultarPassword = !ocultarPassword" 
+            type="button"
+            [attr.aria-label]="'Mostrar contraseña'"
+            [attr.aria-pressed]="!ocultarPassword">
+            <mat-icon>{{ ocultarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="formularioLogin.get('password')?.hasError('required')">
+            La contraseña es requerida
+          </mat-error>
+          <mat-error *ngIf="formularioLogin.get('password')?.hasError('minlength')">
+            Mínimo 6 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Botón Login -->
+        <button 
+          class="full-width" 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          [disabled]="formularioLogin.invalid || mostrarLoading">
+          <mat-icon>login</mat-icon>
+          <span>Ingresar</span>
+        </button>
+
+      </form>
+    </mat-card-content>
+
+    <!-- Loading Bar -->
+    <mat-card-footer *ngIf="mostrarLoading">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+
+  </mat-card>
+</div>
