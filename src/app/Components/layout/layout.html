@@ -1,0 +1,56 @@
+<mat-sidenav-container class="sidenav-container">
+  
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidenav">
+    <div class="sidebar-header">
+      <h2>Providers Tekus</h2>
+    </div>
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="/pages/home" routerLinkActive="active">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      
+      <a mat-list-item routerLink="/pages/servicios" routerLinkActive="active">
+        <mat-icon>build</mat-icon>
+        <span>Servicios</span>
+      </a>
+      
+      <a mat-list-item routerLink="/pages/proveedores" routerLinkActive="active">
+        <mat-icon>business</mat-icon>
+        <span>Proveedores</span>
+      </a>
+      
+      <a mat-list-item routerLink="/pages/usuarios" routerLinkActive="active">
+        <mat-icon>people</mat-icon>
+        <span>Usuarios</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Contenido principal -->
+  <mat-sidenav-content>
+    
+    <!-- Toolbar -->
+    <mat-toolbar color="primary">
+      <span class="toolbar-spacer"></span>
+      
+      <span class="user-info" *ngIf="usuarioActual">
+        <mat-icon>account_circle</mat-icon>
+        {{ usuarioActual.nombre }}
+      </span>
+      
+      <button mat-icon-button (click)="cerrarSesion()" matTooltip="Cerrar sesión">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <!-- Contenido dinámico -->
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
