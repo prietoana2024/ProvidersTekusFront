@@ -12,6 +12,11 @@ import { ProveedorService } from '../../../../Services/proveedor.service';
 import { Proveedor, ProveedorRequest } from '../../../../Interfaces/proveedor';
 import { CampoDisponible } from '../../../../Interfaces/campoDisponible';
 
+interface CampoExtra {
+  nombre: string;
+  valor: string;
+}
+
 @Component({
   selector: 'app-modal-provider',
   imports: [ReactiveFormsModule,
@@ -26,9 +31,11 @@ import { CampoDisponible } from '../../../../Interfaces/campoDisponible';
   templateUrl: './modal-provider.html',
   styleUrl: './modal-provider.css',
 })
-export class ModalProvider implements OnInit {  proveedorForm!: FormGroup;
+export class ModalProvider implements OnInit {  
+  proveedorForm!: FormGroup;
   loading = false;
   esEdicion = false;
+  camposExtras: CampoExtra[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -81,14 +88,43 @@ export class ModalProvider implements OnInit {  proveedorForm!: FormGroup;
         email: proveedor.email
       });
 
-      // Cargar campos dinámicos
+      // Cargar campos dinámicos predefinidos
       this.data.camposDisponibles.forEach(campo => {
         const valor = proveedor[campo.nombreCampo];
         if (valor) {
           this.proveedorForm.get(campo.nombreCampo)?.setValue(valor);
         }
       });
+
+      // Cargar campos extras que no están en camposDisponibles
+      const camposConocidos = ['id', 'nombre', 'nit', 'email', 'fechaCreacion'];
+      const camposPredefinidos = this.data.camposDisponibles.map(c => c.nombreCampo);
+      
+      Object.keys(proveedor).forEach(key => {
+        if (!camposConocidos.includes(key) && !camposPredefinidos.includes(key)) {
+          const valor = proveedor[key];
+          if (valor) {
+            this.camposExtras.push({ nombre: key, valor: valor });
+          }
+        }
+      });
     }
+  }
+
+  agregarCampoExtra(): void {
+    this.camposExtras.push({ nombre: '', valor: '' });
+  }
+
+  eliminarCampoExtra(index: number): void {
+    this.camposExtras.splice(index, 1);
+  }
+
+  actualizarNombreCampo(index: number, nombre: string): void {
+    this.camposExtras[index].nombre = nombre;
+  }
+
+  actualizarValorCampo(index: number, valor: string): void {
+    this.camposExtras[index].valor = valor;
   }
 
   guardar(): void {
@@ -98,16 +134,31 @@ export class ModalProvider implements OnInit {  proveedorForm!: FormGroup;
       return;
     }
 
+    // Validar campos extras
+    const camposExtrasInvalidos = this.camposExtras.some(c => !c.nombre.trim() || !c.valor.trim());
+    if (camposExtrasInvalidos) {
+      this.mostrarMensaje('Complete el nombre y valor de todos los campos extras', 'error');
+      return;
+    }
+
     this.loading = true;
     const formValue = this.proveedorForm.value;
 
     // Construir objeto para enviar a la API
     const camposPersonalizados: { [key: string]: string } = {};
     
+    // Agregar campos predefinidos
     this.data.camposDisponibles.forEach(campo => {
       const valor = formValue[campo.nombreCampo];
       if (valor) {
         camposPersonalizados[campo.nombreCampo] = valor;
+      }
+    });
+
+    // Agregar campos extras
+    this.camposExtras.forEach(campo => {
+      if (campo.nombre.trim() && campo.valor.trim()) {
+        camposPersonalizados[campo.nombre.trim()] = campo.valor.trim();
       }
     });
 

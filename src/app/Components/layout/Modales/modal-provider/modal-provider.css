@@ -115,6 +115,56 @@ mat-dialog-actions button {
   color: white !important;
 }
 
+/* Campos Extras */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header .section-title {
+  margin: 0;
+}
+
+.info-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 14px;
+  padding: 12px 16px;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.info-text mat-icon {
+  color: #1976d2;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.campo-extra-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.campo-nombre {
+  flex: 0 0 35%;
+}
+
+.campo-valor {
+  flex: 1;
+}
+
+.delete-btn {
+  margin-top: 8px;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .half-width {
@@ -127,5 +177,18 @@ mat-dialog-actions button {
 
   mat-dialog-content {
     min-height: 300px;
+  }
+
+  .campo-extra-row {
+    flex-wrap: wrap;
+  }
+
+  .campo-nombre,
+  .campo-valor {
+    flex: 1 1 100%;
+  }
+
+  .delete-btn {
+    margin-top: 0;
   }
 }

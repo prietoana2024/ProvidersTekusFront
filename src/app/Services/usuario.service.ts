@@ -13,14 +13,10 @@ import { environment } from '../../environments/environment.development';
 })
 export class UsuarioService {
 
-  private urlApi:string = environment.endpoint+"Usuario/";
+  private urlApi:string = environment.endpoint+"/Users/";
   
   constructor(private http:HttpClient) { }
 
-  iniciarSesion(request:Login):Observable<ResponseApi>
-  {
-    return this.http.post<ResponseApi>(`${this.urlApi}IniciarSesion`,request)
-  }
   lista():Observable<ResponseApi>{
     return this.http.get<ResponseApi>(`${this.urlApi}Lista`)
   }

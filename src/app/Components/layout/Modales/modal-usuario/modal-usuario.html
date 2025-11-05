@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>{{ tituloAccion }} Usuario</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="formularioUsuario">
+    <mat-form-field appearance="fill">
+      <mat-label>Nombre Completo</mat-label>
+      <input matInput formControlName="nombreCompleto" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Correo</mat-label>
+      <input matInput type="email" formControlName="correo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Clave</mat-label>
+      <input
+        matInput
+        [type]="ocultarPassword ? 'password' : 'text'"
+        formControlName="clave"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="ocultarPassword = !ocultarPassword"
+        [attr.aria-label]="'Ocultar contraseña'"
+        type="button"
+      >
+        <mat-icon>{{ ocultarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="modalActual.close()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="guardarEditar_Usuario()">
+    {{ botonAccion }}
+  </button>
+</mat-dialog-actions>

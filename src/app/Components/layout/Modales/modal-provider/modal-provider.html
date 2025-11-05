@@ -56,12 +56,12 @@
 
     <mat-divider></mat-divider>
 
-    <!-- Sección: Campos Personalizados -->
+    <!-- Sección: Campos Predefinidos -->
     @if (data.camposDisponibles.length > 0) {
       <div class="form-section">
         <h3 class="section-title">
           <mat-icon>tune</mat-icon>
-          Campos Adicionales
+          Campos Predefinidos del Sistema
         </h3>
 
         <div class="form-row">
@@ -99,6 +99,67 @@
         </div>
       </div>
     }
+
+    <mat-divider></mat-divider>
+
+    <!-- Sección: Campos Extras Personalizables -->
+    <div class="form-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <mat-icon>add_circle</mat-icon>
+          Campos Personalizados Extras
+        </h3>
+        <button 
+          mat-mini-fab 
+          color="accent" 
+          (click)="agregarCampoExtra()"
+          matTooltip="Agregar campo personalizado"
+          type="button">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      @if (camposExtras.length === 0) {
+        <p class="info-text">
+          <mat-icon>info</mat-icon>
+          Puedes agregar campos adicionales personalizados haciendo clic en el botón +
+        </p>
+      }
+
+      @for (campoExtra of camposExtras; track $index) {
+        <div class="campo-extra-row">
+          <mat-form-field appearance="outline" class="campo-nombre">
+            <mat-label>Nombre del Campo</mat-label>
+            <input 
+              matInput 
+              [value]="campoExtra.nombre"
+              (input)="actualizarNombreCampo($index, $any($event.target).value)"
+              placeholder="Ej: redes_sociales">
+            <mat-icon matPrefix>label</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="campo-valor">
+            <mat-label>Valor</mat-label>
+            <input 
+              matInput 
+              [value]="campoExtra.valor"
+              (input)="actualizarValorCampo($index, $any($event.target).value)"
+              placeholder="Ingrese el valor">
+            <mat-icon matPrefix>edit</mat-icon>
+          </mat-form-field>
+
+          <button 
+            mat-icon-button 
+            color="warn" 
+            (click)="eliminarCampoExtra($index)"
+            matTooltip="Eliminar campo"
+            type="button"
+            class="delete-btn">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
 
   </form>
 </mat-dialog-content>

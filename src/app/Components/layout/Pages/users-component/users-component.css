@@ -1,0 +1,20 @@
+table {
+  width: 100%;
+}
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+.card-info{
+  width: 180px;
+  height: 30px;
+  border-radius: 8px;
+  border: #f8f8f8;
+  background: #40c3ffab;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+
+}
