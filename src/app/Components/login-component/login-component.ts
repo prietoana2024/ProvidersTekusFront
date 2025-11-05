@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit {
       email: this.formularioLogin.value.email,
       password: this.formularioLogin.value.password
     };
+    console.log('loginData', loginData);
 
     this.authService.login(loginData).subscribe({
       next: (response) => {
