@@ -22,7 +22,6 @@ export const authInterceptorFn: HttpInterceptorFn = (req, next) => {
       })
     : req;
 
-  // Manejar respuesta
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       // Si es 401 Unauthorized, cerrar sesión
