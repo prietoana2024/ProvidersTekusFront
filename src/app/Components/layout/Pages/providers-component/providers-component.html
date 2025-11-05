@@ -1,1 +1,117 @@
-<p>providers-component works!</p>
+<div class="proveedores-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>business</mat-icon>
+        Gestión de Proveedores
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="cargarProveedores()">
+        <mat-icon>refresh</mat-icon>
+        Actualizar
+      </button>
+      <button mat-raised-button color="accent">
+        <mat-icon>add</mat-icon>
+        Nuevo Proveedor
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Cargando proveedores...</p>
+    </div>
+  }
+
+  @if (!loading && proveedores.length > 0) {
+    <mat-card class="table-card">
+      <table mat-table [dataSource]="proveedores" class="proveedores-table">
+
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef>Nombre</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <strong>{{ proveedor.nombre }}</strong>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="correoElectronico">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <mat-icon class="email-icon">email</mat-icon>
+            {{ proveedor.correoElectronico }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="telefono">
+          <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <mat-icon class="phone-icon">phone</mat-icon>
+            {{ proveedor.telefono }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="pais">
+          <th mat-header-cell *matHeaderCellDef>País</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <mat-icon class="location-icon">location_on</mat-icon>
+            {{ proveedor.pais }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="activo">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let proveedor">
+            @if (proveedor.activo) {
+              <span class="badge badge-active">Activo</span>
+            } @else {
+              <span class="badge badge-inactive">Inactivo</span>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <button 
+              mat-icon-button 
+              color="primary" 
+              matTooltip="Ver detalles">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              color="accent" 
+              matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              color="warn" 
+              (click)="eliminarProveedor(proveedor.id!)"
+              matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+    </mat-card>
+  }
+
+  @if (!loading && proveedores.length === 0) {
+    <mat-card class="empty-state">
+      <mat-icon class="empty-icon">inbox</mat-icon>
+      <h3>No hay proveedores registrados</h3>
+      <p>Comienza agregando un nuevo proveedor</p>
+      <button mat-raised-button color="primary">
+        <mat-icon>add</mat-icon>
+        Agregar Proveedor
+      </button>
+    </mat-card>
+  }
+</div>

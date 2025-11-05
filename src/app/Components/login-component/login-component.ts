@@ -43,8 +43,8 @@ export class LoginComponent implements OnInit {
     private utilidadService: UtilidadService
   ) {
     this.formularioLogin = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      email: ['prietoanasoftware@gmail.com', [Validators.required, Validators.email]],
+      password: ['Hannah2022*', [Validators.required, Validators.minLength(6)]]
     });
   }
 

@@ -1,1 +1,149 @@
-<p>home-component works!</p>
+<div class="home-container">
+  <div class="header">
+    <h1>
+      <mat-icon>analytics</mat-icon>
+      Dashboard de Resumen
+    </h1>
+    <p class="subtitle">Servicios y Proveedores por País</p>
+  </div>
+
+  <mat-tab-group animationDuration="300ms" class="custom-tabs">
+    
+    <!-- TAB: SERVICIOS -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">build</mat-icon>
+        Servicios
+      </ng-template>
+
+      @if (loadingServicios) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Cargando servicios...</p>
+        </div>
+      }
+
+      @if (errorServicios) {
+        <mat-card class="error-card">
+          <mat-card-content>
+            <div class="error-content">
+              <mat-icon color="warn">error</mat-icon>
+              <div>
+                <h3>Error al cargar los servicios</h3>
+                <p>{{ errorServicios }}</p>
+                <button mat-raised-button color="primary" (click)="cargarServicios()">
+                  <mat-icon>refresh</mat-icon>
+                  Reintentar
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (!loadingServicios && !errorServicios) {
+        <div class="cards-grid">
+          @for (pais of serviciosPorPais; track pais.pais) {
+            <mat-card class="pais-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar class="pais-avatar servicios-avatar">
+                  {{ getPaisIcon(pais.pais) }}
+                </mat-icon>
+                <mat-card-title>{{ pais.pais }}</mat-card-title>
+                <mat-card-subtitle>
+                  <span [matBadge]="pais.totalServicios" matBadgeColor="primary" class="badge-servicios">
+                    Servicios disponibles
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-divider></mat-divider>
+
+              <mat-card-content>
+                <div class="servicios-container">
+                  <mat-chip-set>
+                    @for (servicio of getServiciosArray(pais.servicios); track servicio) {
+                      <mat-chip class="chip-servicio">
+                        <mat-icon class="chip-icon">code</mat-icon>
+                        {{ servicio }}
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+    </mat-tab>
+
+    <!-- TAB: PROVEEDORES -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">business</mat-icon>
+        Proveedores
+      </ng-template>
+
+      @if (loadingProveedores) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Cargando proveedores...</p>
+        </div>
+      }
+
+      @if (errorProveedores) {
+        <mat-card class="error-card">
+          <mat-card-content>
+            <div class="error-content">
+              <mat-icon color="warn">error</mat-icon>
+              <div>
+                <h3>Error al cargar los proveedores</h3>
+                <p>{{ errorProveedores }}</p>
+                <button mat-raised-button color="primary" (click)="cargarProveedores()">
+                  <mat-icon>refresh</mat-icon>
+                  Reintentar
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (!loadingProveedores && !errorProveedores) {
+        <div class="cards-grid">
+          @for (pais of proveedoresPorPais; track pais.pais) {
+            <mat-card class="pais-card">
+              <mat-card-header>
+                <mat-icon mat-card-avatar class="pais-avatar proveedores-avatar">
+                  {{ getPaisIcon(pais.pais) }}
+                </mat-icon>
+                <mat-card-title>{{ pais.pais }}</mat-card-title>
+                <mat-card-subtitle>
+                  <span [matBadge]="pais.cantidadProveedores" matBadgeColor="accent" class="badge-servicios">
+                    Proveedores registrados
+                  </span>
+                </mat-card-subtitle>
+              </mat-card-header>
+
+              <mat-divider></mat-divider>
+
+              <mat-card-content>
+                <div class="servicios-container">
+                  <mat-chip-set>
+                    @for (proveedor of getProveedoresArray(pais.proveedores); track proveedor) {
+                      <mat-chip class="chip-proveedor">
+                        <mat-icon class="chip-icon">store</mat-icon>
+                        {{ proveedor }}
+                      </mat-chip>
+                    }
+                  </mat-chip-set>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

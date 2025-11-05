@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, OnInit, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -18,13 +18,23 @@ import { Usuario } from '../../Interfaces/usuario';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
-    MatButtonModule],
+    MatButtonModule,
+  RouterLink,       
+    RouterLinkActive],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
 export class Layout implements OnInit {
 
   usuarioActual: Usuario | null = null;
+  opened = signal(true);
+
+  menuItems = [
+    { path: '/pages/home', icon: 'dashboard', label: 'Dashboard' },
+    { path: '/pages/servicios', icon: 'build', label: 'Servicios' },
+    { path: '/pages/proveedores', icon: 'business', label: 'Proveedores' },
+    { path: '/pages/usuarios', icon: 'people', label: 'Usuarios' }
+  ];
 
   constructor(
     private authService: AuthService,
@@ -32,7 +42,6 @@ export class Layout implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a los cambios del usuario actual
     this.authService.currentUser$.subscribe(user => {
       this.usuarioActual = user;
     });
@@ -40,10 +49,13 @@ export class Layout implements OnInit {
 
   cerrarSesion(): void {
     this.authService.logout();
-    // El servicio ya hace navigate a /login
   }
 
   navegarA(ruta: string): void {
     this.router.navigate([`/pages/${ruta}`]);
+  }
+
+  toggleSidenav(): void {
+    this.opened.set(!this.opened());
   }
 }
