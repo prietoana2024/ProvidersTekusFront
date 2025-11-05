@@ -1,0 +1,123 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ esEdicion ? 'edit' : 'add_business' }}</mat-icon>
+  {{ esEdicion ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="proveedorForm" class="proveedor-form">
+    
+    <!-- Sección: Datos Básicos -->
+    <div class="form-section">
+      <h3 class="section-title">
+        <mat-icon>info</mat-icon>
+        Datos Básicos (Requeridos)
+      </h3>
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre del Proveedor</mat-label>
+          <input matInput formControlName="nombre" placeholder="Ej: Acme Corporation">
+          <mat-icon matPrefix>business</mat-icon>
+          @if (hasError('nombre', 'required')) {
+            <mat-error>El nombre es requerido</mat-error>
+          }
+          @if (hasError('nombre', 'minlength')) {
+            <mat-error>Mínimo 3 caracteres</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>NIT</mat-label>
+          <input matInput formControlName="nit" placeholder="Ej: 811040812-2">
+          <mat-icon matPrefix>badge</mat-icon>
+          @if (hasError('nit', 'required')) {
+            <mat-error>El NIT es requerido</mat-error>
+          }
+          @if (hasError('nit', 'minlength')) {
+            <mat-error>Mínimo 5 caracteres</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="contacto@empresa.com">
+          <mat-icon matPrefix>email</mat-icon>
+          @if (hasError('email', 'required')) {
+            <mat-error>El email es requerido</mat-error>
+          }
+          @if (hasError('email', 'email')) {
+            <mat-error>Email inválido</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Sección: Campos Personalizados -->
+    @if (data.camposDisponibles.length > 0) {
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>tune</mat-icon>
+          Campos Adicionales
+        </h3>
+
+        <div class="form-row">
+          @for (campo of data.camposDisponibles; track campo.id) {
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>
+                {{ campo.etiqueta }}
+                @if (campo.requerido) {
+                  <span class="required-asterisk">*</span>
+                }
+              </mat-label>
+              <input 
+                matInput 
+                [formControlName]="campo.nombreCampo"
+                [placeholder]="'Ingrese ' + campo.etiqueta.toLowerCase()">
+              
+              @if (campo.nombreCampo === 'telefono') {
+                <mat-icon matPrefix>phone</mat-icon>
+              }
+              @if (campo.nombreCampo === 'direccion') {
+                <mat-icon matPrefix>home</mat-icon>
+              }
+              @if (campo.nombreCampo === 'ciudad') {
+                <mat-icon matPrefix>location_city</mat-icon>
+              }
+              @if (campo.nombreCampo === 'sitio_web') {
+                <mat-icon matPrefix>language</mat-icon>
+              }
+
+              @if (hasError(campo.nombreCampo, 'required')) {
+                <mat-error>{{ campo.etiqueta }} es requerido</mat-error>
+              }
+            </mat-form-field>
+          }
+        </div>
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cerrar()" [disabled]="loading">
+    <mat-icon>close</mat-icon>
+    Cancelar
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    (click)="guardar()"
+    [disabled]="loading">
+    @if (loading) {
+      <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+    } @else {
+      <mat-icon>{{ esEdicion ? 'save' : 'add' }}</mat-icon>
+    }
+    {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>

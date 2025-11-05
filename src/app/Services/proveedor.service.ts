@@ -5,8 +5,7 @@ import { Observable } from 'rxjs';
 import { ResumenResponse } from '../Interfaces/resumenResponse';
 import { ResumenProveedoresResponse } from '../Interfaces/ResumenProveedoresResponse';
 import { ResponseApi } from '../Interfaces/response-api';
-import { Proveedor } from '../Interfaces/proveedor';
-import { ProveedorResponse } from '../Interfaces/proveedorResponse';
+import { Proveedor, ProveedoresResponse, ProveedorRequest } from '../Interfaces/proveedor';
 import { ProveedorSingleResponse } from '../Interfaces/proveedorsingleResponse';
 
 @Injectable({
@@ -17,19 +16,21 @@ export class ProveedorService {
 
   constructor(private http: HttpClient) { }
 
-  lista(): Observable<ProveedorResponse> {
-    return this.http.get<ProveedorResponse>(this.apiUrl);
-  }
-  obtenerPorId(id: number): Observable<ProveedorSingleResponse> {
-    return this.http.get<ProveedorSingleResponse>(`${this.apiUrl}/${id}`);
+  lista(): Observable<ProveedoresResponse> {
+    return this.http.get<ProveedoresResponse>(this.apiUrl);
   }
 
-  guardar(proveedor: Proveedor): Observable<ProveedorSingleResponse> {
-    return this.http.post<ProveedorSingleResponse>(this.apiUrl, proveedor);
+  obtenerPorId(id: number): Observable<Proveedor> {
+    return this.http.get<Proveedor>(`${this.apiUrl}/${id}`);
   }
 
-  editar(id: number, proveedor: Proveedor): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, proveedor);
+  guardar(request: ProveedorRequest): Observable<Proveedor> {
+    return this.http.post<Proveedor>(this.apiUrl, request);
+  }
+
+  
+  editar(id: number, request: ProveedorRequest): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, request);
   }
 
   eliminar(id: number): Observable<void> {

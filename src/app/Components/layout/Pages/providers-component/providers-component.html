@@ -5,13 +5,16 @@
         <mat-icon>business</mat-icon>
         Gestión de Proveedores
       </mat-card-title>
+      <mat-card-subtitle>
+        Sistema con campos dinámicos personalizables
+      </mat-card-subtitle>
     </mat-card-header>
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="cargarProveedores()">
         <mat-icon>refresh</mat-icon>
         Actualizar
       </button>
-      <button mat-raised-button color="accent">
+      <button mat-raised-button color="accent" (click)="abrirDialogNuevo()">
         <mat-icon>add</mat-icon>
         Nuevo Proveedor
       </button>
@@ -29,6 +32,7 @@
     <mat-card class="table-card">
       <table mat-table [dataSource]="proveedores" class="proveedores-table">
 
+        <!-- Columna Nombre -->
         <ng-container matColumnDef="nombre">
           <th mat-header-cell *matHeaderCellDef>Nombre</th>
           <td mat-cell *matCellDef="let proveedor">
@@ -36,60 +40,54 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="correoElectronico">
+        <!-- Columna NIT -->
+        <ng-container matColumnDef="nit">
+          <th mat-header-cell *matHeaderCellDef>NIT</th>
+          <td mat-cell *matCellDef="let proveedor">
+            <mat-icon class="nit-icon">badge</mat-icon>
+            {{ proveedor.nit }}
+          </td>
+        </ng-container>
+
+        <!-- Columna Email -->
+        <ng-container matColumnDef="email">
           <th mat-header-cell *matHeaderCellDef>Email</th>
           <td mat-cell *matCellDef="let proveedor">
             <mat-icon class="email-icon">email</mat-icon>
-            {{ proveedor.correoElectronico }}
+            {{ proveedor.email }}
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="telefono">
-          <th mat-header-cell *matHeaderCellDef>Teléfono</th>
+        <!-- Columna Campos Personalizados -->
+        <ng-container matColumnDef="campos">
+          <th mat-header-cell *matHeaderCellDef>Campos Adicionales</th>
           <td mat-cell *matCellDef="let proveedor">
-            <mat-icon class="phone-icon">phone</mat-icon>
-            {{ proveedor.telefono }}
+            <div class="campos-chips">
+              @for (campo of getCamposPersonalizados(proveedor); track campo) {
+                <mat-chip class="campo-chip">{{ campo }}</mat-chip>
+              }
+              @if (getCamposPersonalizados(proveedor).length === 0) {
+                <span class="no-campos">Sin campos adicionales</span>
+              }
+            </div>
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="pais">
-          <th mat-header-cell *matHeaderCellDef>País</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <mat-icon class="location-icon">location_on</mat-icon>
-            {{ proveedor.pais }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="activo">
-          <th mat-header-cell *matHeaderCellDef>Estado</th>
-          <td mat-cell *matCellDef="let proveedor">
-            @if (proveedor.activo) {
-              <span class="badge badge-active">Activo</span>
-            } @else {
-              <span class="badge badge-inactive">Inactivo</span>
-            }
-          </td>
-        </ng-container>
-
+        <!-- Columna Acciones -->
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>
           <td mat-cell *matCellDef="let proveedor">
             <button 
               mat-icon-button 
-              color="primary" 
-              matTooltip="Ver detalles">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button 
-              mat-icon-button 
               color="accent" 
+              (click)="abrirDialogEditar(proveedor)"
               matTooltip="Editar">
               <mat-icon>edit</mat-icon>
             </button>
             <button 
               mat-icon-button 
               color="warn" 
-              (click)="eliminarProveedor(proveedor.id!)"
+              (click)="eliminarProveedor(proveedor.id)"
               matTooltip="Eliminar">
               <mat-icon>delete</mat-icon>
             </button>
@@ -107,8 +105,8 @@
     <mat-card class="empty-state">
       <mat-icon class="empty-icon">inbox</mat-icon>
       <h3>No hay proveedores registrados</h3>
-      <p>Comienza agregando un nuevo proveedor</p>
-      <button mat-raised-button color="primary">
+      <p>Comienza agregando un nuevo proveedor con campos personalizados</p>
+      <button mat-raised-button color="primary" (click)="abrirDialogNuevo()">
         <mat-icon>add</mat-icon>
         Agregar Proveedor
       </button>

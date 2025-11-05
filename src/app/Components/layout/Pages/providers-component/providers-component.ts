@@ -9,6 +9,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Proveedor } from '../../../../Interfaces/proveedor';
 import { ProveedorService } from '../../../../Services/proveedor.service';
+import { CampoDisponible } from '../../../../Interfaces/campoDisponible';
+import { ModalProvider } from '../../Modales/modal-provider/modal-provider';
+import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-providers-component',
@@ -19,13 +22,15 @@ import { ProveedorService } from '../../../../Services/proveedor.service';
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatCardModule,
-    MatTooltipModule],
+    MatTooltipModule,
+  MatChip],
   templateUrl: './providers-component.html',
   styleUrl: './providers-component.css',
 })
 export class ProvidersComponent implements OnInit {
   proveedores: Proveedor[] = [];
-  displayedColumns: string[] = ['nombre', 'correoElectronico', 'telefono', 'pais', 'activo', 'acciones'];
+  camposDisponibles: CampoDisponible[] = [];
+  displayedColumns: string[] = ['nombre', 'nit', 'email', 'campos', 'acciones'];
   loading = false;
 
   constructor(
@@ -42,17 +47,48 @@ export class ProvidersComponent implements OnInit {
     this.loading = true;
     this.proveedorService.lista().subscribe({
       next: (response) => {
-        if (response.status) {
-          this.proveedores = response.value;
-        } else {
-          this.mostrarMensaje('Error al cargar proveedores', 'error');
-        }
+        this.proveedores = response.proveedores;
+        this.camposDisponibles = response.camposDisponibles;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error:', err);
-        this.mostrarMensaje('Error al conectar con el servidor', 'error');
+        this.mostrarMensaje('Error al cargar proveedores', 'error');
         this.loading = false;
+      }
+    });
+  }
+
+  abrirDialogNuevo(): void {
+    const dialogRef = this.dialog.open(ModalProvider, {
+      width: '700px',
+      data: {
+        proveedor: null,
+        camposDisponibles: this.camposDisponibles,
+        esEdicion: false
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.cargarProveedores();
+      }
+    });
+  }
+
+  abrirDialogEditar(proveedor: Proveedor): void {
+    const dialogRef = this.dialog.open(ModalProvider, {
+      width: '700px',
+      data: {
+        proveedor: proveedor,
+        camposDisponibles: this.camposDisponibles,
+        esEdicion: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.cargarProveedores();
       }
     });
   }
@@ -70,6 +106,17 @@ export class ProvidersComponent implements OnInit {
         }
       });
     }
+  }
+
+  getCamposPersonalizados(proveedor: Proveedor): string[] {
+    const campos: string[] = [];
+    this.camposDisponibles.forEach(campo => {
+      const valor = proveedor[campo.nombreCampo];
+      if (valor) {
+        campos.push(`${campo.etiqueta}: ${valor}`);
+      }
+    });
+    return campos;
   }
 
   mostrarMensaje(mensaje: string, tipo: 'success' | 'error'): void {

@@ -141,6 +141,36 @@
   color: white !important;
 }
 
+/* Campos personalizados */
+.campos-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.campo-chip {
+  font-size: 11px !important;
+  min-height: 24px !important;
+  padding: 4px 8px !important;
+  background-color: #e3f2fd !important;
+  color: #1565c0 !important;
+}
+
+.no-campos {
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.nit-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+  color: #666;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .proveedores-container {
@@ -163,5 +193,9 @@
   .proveedores-table th,
   .proveedores-table td {
     padding: 8px;
+  }
+
+  .campos-chips {
+    max-width: 200px;
   }
 }
