@@ -8,14 +8,12 @@ import { LoginComponent } from './Components/login-component/login-component';
 import { RegisterComponent } from './Components/register-component/register-component';
 
 export const routes: Routes = [
-  // Ruta raíz - redirige según autenticación
   { 
     path: '', 
     redirectTo: 'login', 
     pathMatch: 'full' 
   },
   
-  // Rutas públicas (sin autenticación)
   { 
     path: 'login', 
     component: LoginComponent 
@@ -25,16 +23,11 @@ export const routes: Routes = [
     component: RegisterComponent 
   },
   
-  // Rutas protegidas (requieren autenticación)
   { 
     path: 'pages',
     canActivate: [authGuard], // ✅ Protegido con guard
     loadChildren: () => import('./Components/layout/pages.routes').then(m => m.routes)
   },
   
-  // Ruta wildcard - redirige a login
-  { 
-    path: '**', 
-    redirectTo: 'login' 
-  }
+  
 ];

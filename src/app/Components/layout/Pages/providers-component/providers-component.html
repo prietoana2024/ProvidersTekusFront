@@ -1,4 +1,5 @@
 <div class="proveedores-container">
+  <!-- Header -->
   <mat-card class="header-card">
     <mat-card-header>
       <mat-card-title>
@@ -21,95 +22,85 @@
     </mat-card-actions>
   </mat-card>
 
-  @if (loading) {
-    <div class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>Cargando proveedores...</p>
-    </div>
-  }
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Cargando proveedores...</p>
+  </div>
 
-  @if (!loading && proveedores.length > 0) {
-    <mat-card class="table-card">
-      <table mat-table [dataSource]="proveedores" class="proveedores-table">
+  <!-- Tabla de proveedores -->
+  <mat-card *ngIf="!loading && proveedores.length > 0" class="table-card">
+    <table mat-table [dataSource]="proveedores" class="proveedores-table">
 
-        <!-- Columna Nombre -->
-        <ng-container matColumnDef="nombre">
-          <th mat-header-cell *matHeaderCellDef>Nombre</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <strong>{{ proveedor.nombre }}</strong>
-          </td>
-        </ng-container>
+      <!-- Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let proveedor">
+          <strong>{{ proveedor.nombre }}</strong>
+        </td>
+      </ng-container>
 
-        <!-- Columna NIT -->
-        <ng-container matColumnDef="nit">
-          <th mat-header-cell *matHeaderCellDef>NIT</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <mat-icon class="nit-icon">badge</mat-icon>
-            {{ proveedor.nit }}
-          </td>
-        </ng-container>
+      <!-- NIT -->
+      <ng-container matColumnDef="nit">
+        <th mat-header-cell *matHeaderCellDef>NIT</th>
+        <td mat-cell *matCellDef="let proveedor">
+          <mat-icon class="nit-icon">badge</mat-icon>
+          {{ proveedor.nit }}
+        </td>
+      </ng-container>
 
-        <!-- Columna Email -->
-        <ng-container matColumnDef="email">
-          <th mat-header-cell *matHeaderCellDef>Email</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <mat-icon class="email-icon">email</mat-icon>
-            {{ proveedor.email }}
-          </td>
-        </ng-container>
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let proveedor">
+          <mat-icon class="email-icon">email</mat-icon>
+          {{ proveedor.email }}
+        </td>
+      </ng-container>
 
-        <!-- Columna Campos Personalizados -->
-        <ng-container matColumnDef="campos">
-          <th mat-header-cell *matHeaderCellDef>Campos Adicionales</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <div class="campos-chips">
-              @for (campo of getCamposPersonalizados(proveedor); track campo) {
-                <mat-chip class="campo-chip">{{ campo }}</mat-chip>
-              }
-              @if (getCamposPersonalizados(proveedor).length === 0) {
-                <span class="no-campos">Sin campos adicionales</span>
-              }
-            </div>
-          </td>
-        </ng-container>
+      <!-- Campos Personalizados -->
+      <ng-container matColumnDef="campos">
+        <th mat-header-cell *matHeaderCellDef>Campos Adicionales</th>
+        <td mat-cell *matCellDef="let proveedor">
+          <div class="campos-chips">
+            <mat-chip *ngFor="let campo of getCamposPersonalizados(proveedor)" class="campo-chip">
+              {{ campo }}
+            </mat-chip>
+            <span *ngIf="getCamposPersonalizados(proveedor).length === 0" class="no-campos">
+              Sin campos adicionales
+            </span>
+          </div>
+        </td>
+      </ng-container>
 
-        <!-- Columna Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let proveedor">
-            <button 
-              mat-icon-button 
-              color="accent" 
-              (click)="abrirDialogEditar(proveedor)"
-              matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button 
-              mat-icon-button 
-              color="warn" 
-              (click)="eliminarProveedor(proveedor.id)"
-              matTooltip="Eliminar">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let proveedor">
+          <button mat-icon-button color="accent" (click)="abrirDialogEditar(proveedor)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="eliminarProveedor(proveedor.id)" matTooltip="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <!-- Header y filas -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-      </table>
-    </mat-card>
-  }
+    </table>
+  </mat-card>
 
-  @if (!loading && proveedores.length === 0) {
-    <mat-card class="empty-state">
-      <mat-icon class="empty-icon">inbox</mat-icon>
-      <h3>No hay proveedores registrados</h3>
-      <p>Comienza agregando un nuevo proveedor con campos personalizados</p>
-      <button mat-raised-button color="primary" (click)="abrirDialogNuevo()">
-        <mat-icon>add</mat-icon>
-        Agregar Proveedor
-      </button>
-    </mat-card>
-  }
+  <!-- Empty State -->
+  <mat-card *ngIf="!loading && proveedores.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">inbox</mat-icon>
+    <h3>No hay proveedores registrados</h3>
+    <p>Comienza agregando un nuevo proveedor con campos personalizados</p>
+    <button mat-raised-button color="primary" (click)="abrirDialogNuevo()">
+      <mat-icon>add</mat-icon>
+      Agregar Proveedor
+    </button>
+  </mat-card>
 </div>

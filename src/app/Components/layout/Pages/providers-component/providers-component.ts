@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgFor, NgIf } from '@angular/common'; // <-- Importante
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,15 +8,21 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Proveedor } from '../../../../Interfaces/proveedor';
+import { MatChipsModule } from '@angular/material/chips';
 import { ProveedorService } from '../../../../Services/proveedor.service';
-import { CampoDisponible } from '../../../../Interfaces/campoDisponible';
+import { ProveedorResponseGET } from '../../../../Interfaces/provider';
 import { ModalProvider } from '../../Modales/modal-provider/modal-provider';
-import { MatChip } from '@angular/material/chips';
 
 @Component({
   selector: 'app-providers-component',
-  imports: [MatTableModule,
+  templateUrl: './providers-component.html',
+  styleUrls: ['./providers-component.css'],
+  standalone: true,
+  imports: [
+    CommonModule, // <-- Necesario para ngIf
+    NgIf,        // <-- Necesario para *ngIf
+    NgFor,       // <-- Necesario para *ngFor
+    MatTableModule,
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
@@ -23,13 +30,11 @@ import { MatChip } from '@angular/material/chips';
     MatProgressSpinnerModule,
     MatCardModule,
     MatTooltipModule,
-  MatChip],
-  templateUrl: './providers-component.html',
-  styleUrl: './providers-component.css',
+    MatChipsModule
+  ]
 })
 export class ProvidersComponent implements OnInit {
-  proveedores: Proveedor[] = [];
-  camposDisponibles: CampoDisponible[] = [];
+  proveedores: ProveedorResponseGET[] = [];
   displayedColumns: string[] = ['nombre', 'nit', 'email', 'campos', 'acciones'];
   loading = false;
 
@@ -45,10 +50,9 @@ export class ProvidersComponent implements OnInit {
 
   cargarProveedores(): void {
     this.loading = true;
-    this.proveedorService.lista().subscribe({
+    this.proveedorService.listar().subscribe({
       next: (response) => {
-        this.proveedores = response.proveedores;
-        this.camposDisponibles = response.camposDisponibles;
+        this.proveedores = response;
         this.loading = false;
       },
       error: (err) => {
@@ -62,61 +66,44 @@ export class ProvidersComponent implements OnInit {
   abrirDialogNuevo(): void {
     const dialogRef = this.dialog.open(ModalProvider, {
       width: '700px',
-      data: {
-        proveedor: null,
-        camposDisponibles: this.camposDisponibles,
-        esEdicion: false
-      }
+      data: { proveedor: null, esEdicion: false }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.cargarProveedores();
-      }
+      if (result) this.cargarProveedores();
     });
   }
 
-  abrirDialogEditar(proveedor: Proveedor): void {
+  abrirDialogEditar(proveedor: ProveedorResponseGET): void {
     const dialogRef = this.dialog.open(ModalProvider, {
       width: '700px',
-      data: {
-        proveedor: proveedor,
-        camposDisponibles: this.camposDisponibles,
-        esEdicion: true
-      }
+      data: { proveedor, esEdicion: true }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.cargarProveedores();
-      }
+      if (result) this.cargarProveedores();
     });
   }
 
   eliminarProveedor(id: number): void {
-    if (confirm('¿Está seguro de eliminar este proveedor?')) {
-      this.proveedorService.eliminar(id).subscribe({
-        next: () => {
-          this.mostrarMensaje('Proveedor eliminado correctamente', 'success');
-          this.cargarProveedores();
-        },
-        error: (err) => {
-          console.error('Error:', err);
-          this.mostrarMensaje('Error al eliminar proveedor', 'error');
-        }
-      });
-    }
-  }
+    if (!confirm('¿Está seguro de eliminar este proveedor?')) return;
 
-  getCamposPersonalizados(proveedor: Proveedor): string[] {
-    const campos: string[] = [];
-    this.camposDisponibles.forEach(campo => {
-      const valor = proveedor[campo.nombreCampo];
-      if (valor) {
-        campos.push(`${campo.etiqueta}: ${valor}`);
+    this.proveedorService.eliminar(id).subscribe({
+      next: () => {
+        this.mostrarMensaje('Proveedor eliminado correctamente', 'success');
+        this.cargarProveedores();
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.mostrarMensaje('Error al eliminar proveedor', 'error');
       }
     });
-    return campos;
+  }
+
+  getCamposPersonalizados(proveedor: ProveedorResponseGET): string[] {
+    if (!proveedor.camposPersonalizados) return [];
+    return Object.entries(proveedor.camposPersonalizados)
+      .map(([key, value]) => `${key}: ${value}`);
   }
 
   mostrarMensaje(mensaje: string, tipo: 'success' | 'error'): void {

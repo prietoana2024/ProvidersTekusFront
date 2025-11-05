@@ -206,13 +206,19 @@ export class AuthService {
     return !!this.getToken();
   }
 
-  isAuthenticated(): boolean {
-    if (!this.isBrowser) return false;
-    const token = this.getToken();
-    if (!token) return false;
+isAuthenticated(): boolean {
+  if (!this.isBrowser) return false;
 
-    return !this.isTokenExpired(token);
+  const token = this.getToken();
+  if (!token) {
+    console.log('[AuthService] No hay token → usuario no autenticado');
+    return false;
   }
+
+  const expired = this.isTokenExpired(token);
+  console.log('[AuthService] Token expirado:', expired);
+  return !expired;
+}
 
   private getUserFromStorage(): Usuario | null {
     if (!this.isBrowser) return null;

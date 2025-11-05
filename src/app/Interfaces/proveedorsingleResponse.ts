@@ -1,4 +1,4 @@
-import { Proveedor } from "./proveedor";
+import { Proveedor } from "./provider";
 
 export interface ProveedorSingleResponse {
   status: boolean;

@@ -4,26 +4,26 @@
 </h2>
 
 <mat-dialog-content>
-  <form [formGroup]="proveedorForm" class="proveedor-form">
-    
-    <!-- Sección: Datos Básicos -->
+  <form *ngIf="proveedorForm" [formGroup]="proveedorForm" class="proveedor-form">
+
+    <!-- Datos Básicos -->
     <div class="form-section">
       <h3 class="section-title">
         <mat-icon>info</mat-icon>
         Datos Básicos (Requeridos)
       </h3>
-      
+
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nombre del Proveedor</mat-label>
           <input matInput formControlName="nombre" placeholder="Ej: Acme Corporation">
           <mat-icon matPrefix>business</mat-icon>
-          @if (hasError('nombre', 'required')) {
-            <mat-error>El nombre es requerido</mat-error>
-          }
-          @if (hasError('nombre', 'minlength')) {
-            <mat-error>Mínimo 3 caracteres</mat-error>
-          }
+          <mat-error *ngIf="proveedorForm.get('nombre')?.hasError('required')">
+            El nombre es requerido
+          </mat-error>
+          <mat-error *ngIf="proveedorForm.get('nombre')?.hasError('minlength')">
+            Mínimo 3 caracteres
+          </mat-error>
         </mat-form-field>
       </div>
 
@@ -32,153 +32,104 @@
           <mat-label>NIT</mat-label>
           <input matInput formControlName="nit" placeholder="Ej: 811040812-2">
           <mat-icon matPrefix>badge</mat-icon>
-          @if (hasError('nit', 'required')) {
-            <mat-error>El NIT es requerido</mat-error>
-          }
-          @if (hasError('nit', 'minlength')) {
-            <mat-error>Mínimo 5 caracteres</mat-error>
-          }
+          <mat-error *ngIf="proveedorForm.get('nit')?.hasError('required')">
+            El NIT es requerido
+          </mat-error>
+          <mat-error *ngIf="proveedorForm.get('nit')?.hasError('minlength')">
+            Mínimo 5 caracteres
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" type="email" placeholder="contacto@empresa.com">
           <mat-icon matPrefix>email</mat-icon>
-          @if (hasError('email', 'required')) {
-            <mat-error>El email es requerido</mat-error>
-          }
-          @if (hasError('email', 'email')) {
-            <mat-error>Email inválido</mat-error>
-          }
+          <mat-error *ngIf="proveedorForm.get('email')?.hasError('required')">
+            El email es requerido
+          </mat-error>
+          <mat-error *ngIf="proveedorForm.get('email')?.hasError('email')">
+            Email inválido
+          </mat-error>
         </mat-form-field>
       </div>
     </div>
 
     <mat-divider></mat-divider>
 
-    <!-- Sección: Campos Predefinidos -->
-    @if (data.camposDisponibles.length > 0) {
-      <div class="form-section">
-        <h3 class="section-title">
-          <mat-icon>tune</mat-icon>
-          Campos Predefinidos del Sistema
-        </h3>
+    <!-- Campos Predefinidos -->
+    <div class="form-section" *ngIf="camposDisponibles.length > 0">
+      <h3 class="section-title">
+        <mat-icon>tune</mat-icon>
+        Campos Predefinidos
+      </h3>
 
-        <div class="form-row">
-          @for (campo of data.camposDisponibles; track campo.id) {
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>
-                {{ campo.etiqueta }}
-                @if (campo.requerido) {
-                  <span class="required-asterisk">*</span>
-                }
-              </mat-label>
-              <input 
-                matInput 
-                [formControlName]="campo.nombreCampo"
-                [placeholder]="'Ingrese ' + campo.etiqueta.toLowerCase()">
-              
-              @if (campo.nombreCampo === 'telefono') {
-                <mat-icon matPrefix>phone</mat-icon>
-              }
-              @if (campo.nombreCampo === 'direccion') {
-                <mat-icon matPrefix>home</mat-icon>
-              }
-              @if (campo.nombreCampo === 'ciudad') {
-                <mat-icon matPrefix>location_city</mat-icon>
-              }
-              @if (campo.nombreCampo === 'sitio_web') {
-                <mat-icon matPrefix>language</mat-icon>
-              }
-
-              @if (hasError(campo.nombreCampo, 'required')) {
-                <mat-error>{{ campo.etiqueta }} es requerido</mat-error>
-              }
-            </mat-form-field>
-          }
-        </div>
+      <div class="form-row" *ngFor="let campo of camposDisponibles">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>{{ campo.etiqueta }} <span *ngIf="campo.requerido" style="color: red;">*</span></mat-label>
+          <input matInput [formControlName]="campo.nombreCampo" [placeholder]="'Ingrese ' + campo.etiqueta.toLowerCase()">
+          <mat-error *ngIf="proveedorForm.get(campo.nombreCampo)?.hasError('required')">
+            {{ campo.etiqueta }} es requerido
+          </mat-error>
+        </mat-form-field>
       </div>
-    }
+    </div>
 
-    <mat-divider></mat-divider>
+    <mat-divider *ngIf="camposDisponibles.length > 0"></mat-divider>
 
-    <!-- Sección: Campos Extras Personalizables -->
+    <!-- Campos Extras -->
     <div class="form-section">
       <div class="section-header">
         <h3 class="section-title">
           <mat-icon>add_circle</mat-icon>
-          Campos Personalizados Extras
+          Campos Personalizados
         </h3>
-        <button 
-          mat-mini-fab 
-          color="accent" 
-          (click)="agregarCampoExtra()"
-          matTooltip="Agregar campo personalizado"
-          type="button">
+        <button mat-mini-fab color="accent" type="button" (click)="agregarCampoExtra()" [disabled]="loading()">
           <mat-icon>add</mat-icon>
         </button>
       </div>
 
-      @if (camposExtras.length === 0) {
-        <p class="info-text">
-          <mat-icon>info</mat-icon>
-          Puedes agregar campos adicionales personalizados haciendo clic en el botón +
-        </p>
-      }
+      <div *ngIf="camposExtrasControls.length === 0" class="info-text">
+        <mat-icon>info</mat-icon>
+        Puedes agregar campos adicionales haciendo clic en el botón +
+      </div>
 
-      @for (campoExtra of camposExtras; track $index) {
-        <div class="campo-extra-row">
-          <mat-form-field appearance="outline" class="campo-nombre">
-            <mat-label>Nombre del Campo</mat-label>
-            <input 
-              matInput 
-              [value]="campoExtra.nombre"
-              (input)="actualizarNombreCampo($index, $any($event.target).value)"
-              placeholder="Ej: redes_sociales">
-            <mat-icon matPrefix>label</mat-icon>
-          </mat-form-field>
+      <div class="campo-extra-row" *ngFor="let campo of camposExtrasControls; let i = index" [formGroup]="campo">
+        <mat-form-field appearance="outline" class="campo-nombre">
+          <mat-label>Nombre del Campo</mat-label>
+          <input matInput formControlName="nombre" placeholder="Ej: telefono">
+          <mat-icon matPrefix>label</mat-icon>
+          <mat-error *ngIf="campo.get('nombre')?.hasError('required')">
+            El nombre es requerido
+          </mat-error>
+        </mat-form-field>
 
-          <mat-form-field appearance="outline" class="campo-valor">
-            <mat-label>Valor</mat-label>
-            <input 
-              matInput 
-              [value]="campoExtra.valor"
-              (input)="actualizarValorCampo($index, $any($event.target).value)"
-              placeholder="Ingrese el valor">
-            <mat-icon matPrefix>edit</mat-icon>
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="campo-valor">
+          <mat-label>Valor</mat-label>
+          <input matInput formControlName="valor" placeholder="Ingrese el valor">
+          <mat-icon matPrefix>edit</mat-icon>
+          <mat-error *ngIf="campo.get('valor')?.hasError('required')">
+            El valor es requerido
+          </mat-error>
+        </mat-form-field>
 
-          <button 
-            mat-icon-button 
-            color="warn" 
-            (click)="eliminarCampoExtra($index)"
-            matTooltip="Eliminar campo"
-            type="button"
-            class="delete-btn">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      }
+        <button mat-icon-button color="warn" type="button" (click)="eliminarCampoExtra(i)" [disabled]="loading()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </div>
 
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="cerrar()" [disabled]="loading">
-    <mat-icon>close</mat-icon>
+  <button mat-button (click)="cerrar()" [disabled]="loading()">
+    <mat-icon>close</mat-icon> 
     Cancelar
   </button>
-  <button 
-    mat-raised-button 
-    color="primary" 
-    (click)="guardar()"
-    [disabled]="loading">
-    @if (loading) {
-      <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
-    } @else {
-      <mat-icon>{{ esEdicion ? 'save' : 'add' }}</mat-icon>
-    }
+
+  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="loading()">
+    <mat-spinner *ngIf="loading()" diameter="20" class="button-spinner"></mat-spinner>
+    <mat-icon *ngIf="!loading()">{{ esEdicion ? 'save' : 'add' }}</mat-icon>
     {{ esEdicion ? 'Actualizar' : 'Guardar' }}
   </button>
 </mat-dialog-actions>

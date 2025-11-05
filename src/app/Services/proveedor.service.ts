@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 import { ResumenResponse } from '../Interfaces/resumenResponse';
 import { ResumenProveedoresResponse } from '../Interfaces/ResumenProveedoresResponse';
 import { ResponseApi } from '../Interfaces/response-api';
-import { Proveedor, ProveedoresResponse, ProveedorRequest } from '../Interfaces/proveedor';
 import { ProveedorSingleResponse } from '../Interfaces/proveedorsingleResponse';
+import { ProveedorRequest, ProveedorResponseGET, ProveedorResponsePOST } from '../Interfaces/provider';
 
 @Injectable({
   providedIn: 'root',
@@ -16,24 +16,25 @@ export class ProveedorService {
 
   constructor(private http: HttpClient) { }
 
-  lista(): Observable<ProveedoresResponse> {
-    return this.http.get<ProveedoresResponse>(this.apiUrl);
+  guardar(req: ProveedorRequest): Observable<ProveedorResponsePOST> {
+    return this.http.post<ProveedorResponsePOST>(this.apiUrl, req);
   }
 
-  obtenerPorId(id: number): Observable<Proveedor> {
-    return this.http.get<Proveedor>(`${this.apiUrl}/${id}`);
+  obtenerPorId(id: number): Observable<ProveedorResponseGET> {
+    return this.http.get<ProveedorResponseGET>(`${this.apiUrl}/${id}`);
   }
 
-  guardar(request: ProveedorRequest): Observable<Proveedor> {
-    return this.http.post<Proveedor>(this.apiUrl, request);
+  listar(): Observable<ProveedorResponseGET[]> {
+    return this.http.get<ProveedorResponseGET[]>(this.apiUrl);
   }
 
-  
-  editar(id: number, request: ProveedorRequest): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, request);
+  /** 🔹 Editar proveedor (PUT /{id}) */
+  editar(id: number, req: ProveedorRequest): Observable<ProveedorResponsePOST> {
+    return this.http.put<ProveedorResponsePOST>(`${this.apiUrl}/${id}`, req);
   }
 
-  eliminar(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  /** 🔹 Eliminar proveedor (DELETE /{id}) */
+  eliminar(id: number): Observable<ResponseApi> {
+    return this.http.delete<ResponseApi>(`${this.apiUrl}/${id}`);
   }
 }
